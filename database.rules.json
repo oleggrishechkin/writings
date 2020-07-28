@@ -1,0 +1,13 @@
+{
+  "rules": {
+    "writings": {
+      "$uid": {
+        ".read": "auth.uid != null && auth.uid === $uid",
+        ".write": "auth.uid != null && auth.uid === $uid",
+        "$writing_id": {
+          ".read": "auth.uid != null"
+        }
+      }
+    }
+  }
+}

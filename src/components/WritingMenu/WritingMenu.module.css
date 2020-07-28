@@ -1,0 +1,13 @@
+.content {
+    justify-content: flex-end;
+}
+
+.content > * {
+    flex: 0 0 auto;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.content > *:not(:last-child) {
+    margin-bottom: 0.5rem;
+}

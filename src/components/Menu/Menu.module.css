@@ -1,0 +1,53 @@
+.menuWrapper {
+    background: var(--black-transparent-persist);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    transition: background 300ms;
+    width: 100%;
+    z-index: 3;
+}
+
+.menuWrapper.opening {
+    background: transparent;
+}
+
+.menuWrapper.close {
+    background: transparent;
+    position: fixed;
+}
+
+.menu {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 300ms;
+}
+
+.menu.opening {
+    transform: translate3d(0, 100%, 0);
+}
+
+.menu.close {
+    transform: translate3d(0, 100%, 0);
+}
+
+.content {
+    justify-content: flex-end;
+    padding: 0.5rem 0;
+}
+
+.content > * {
+    flex: 0 0 auto;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.content > *:not(:last-child) {
+    margin-bottom: 0.5rem;
+}

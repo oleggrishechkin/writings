@@ -1,0 +1,7 @@
+.header {
+    justify-content: flex-end;
+}
+
+.headerButton {
+    flex: 0 0 56px;
+}

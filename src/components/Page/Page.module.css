@@ -1,0 +1,22 @@
+.page {
+    background: var(--black);
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    height: 100%;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    transition: transform 300ms;
+    width: 100%;
+    z-index: 1;
+}
+
+.opening {
+    transform: translate3d(100%, 0, 0);
+}
+
+.close {
+    transform: translate3d(100%, 0, 0);
+}

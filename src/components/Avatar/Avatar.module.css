@@ -1,0 +1,24 @@
+.avatar {
+    align-items: center;
+    background: var(--gray-6);
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.image {
+    flex: 0 0 auto;
+    height: 100%;
+    width: 100%;
+}
+
+.size_28 {
+    height: 28px;
+    width: 28px;
+}
+
+.size_112 {
+    height: 112px;
+    width: 112px;
+}

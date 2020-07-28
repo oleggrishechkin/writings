@@ -1,0 +1,11 @@
+.headerButton {
+    flex: 0 0 56px;
+}
+
+.writings {
+    display: grid;
+    flex: 1 0 auto;
+    gap: 0.5rem;
+    grid-auto-rows: 288px;
+    grid-template-columns: repeat(auto-fill, minmax(288px, 1fr));
+}

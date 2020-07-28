@@ -1,0 +1,35 @@
+.content {
+    justify-content: flex-end;
+}
+
+.content > * {
+    flex: 0 0 auto;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.content > *:not(:last-child) {
+    margin-bottom: 0.5rem;
+}
+
+.horizontalGroup {
+    align-items: stretch;
+    display: flex;
+    justify-content: stretch;
+}
+
+.horizontalGroup > * {
+    flex: 1 0 auto;
+}
+
+.horizontalGroup > *:not(:last-child) {
+    border-right: 1px solid var(--gray-5);
+}
+
+.button {
+    fill: var(--blue);
+}
+
+.button.active {
+    fill: var(--teal);
+}

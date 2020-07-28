@@ -1,0 +1,20 @@
+.iconButton {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    display: flex;
+    fill: var(--blue);
+    justify-content: center;
+    outline: none;
+    transition: opacity 300ms;
+}
+
+.iconButton:active {
+    opacity: 0.7;
+}
+
+.gray {
+    fill: var(--gray);
+}
