@@ -1,5 +1,5 @@
 body {
-    background: var(--black-persist);
+    background: black;
     color: var(--white);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     font-size: var(--fontDefault);
