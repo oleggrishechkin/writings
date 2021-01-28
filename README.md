@@ -19,6 +19,4 @@ App for writers
 
 ### Notes
 
-App built with [Solid](https://github.com/ryansolid/solid) (with signals) as main tech stack for best rendering perfomance.
-It uses [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) for app routing, [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) and [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) as data storages.
 Firebase only provides Realtime DatabaseStorage and Authentication (via REST) for cloud sync.

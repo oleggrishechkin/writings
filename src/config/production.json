@@ -1,0 +1,7 @@
+{
+    "firebase": {
+        "apiKey": "AIzaSyCaOVxj8VKTBQhtNFGMz8zKWisMC9CJ788",
+        "continueUri": "https://writings-1.firebaseapp.com/oauth",
+        "databaseURL": "https://writings-1.firebaseio.com"
+    }
+}

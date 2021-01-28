@@ -1,7 +1,0 @@
-.header {
-    align-items: stretch;
-    border-bottom: 1px solid var(--gray-5);
-    display: flex;
-    flex: 0 0 56px;
-    justify-content: space-between;
-}
