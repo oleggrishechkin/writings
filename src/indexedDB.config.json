@@ -1,0 +1,7 @@
+{
+    "name": "writingsIndexedDB",
+    "version": 1,
+    "stores": {
+        "writings": { "keyPath": "id" }
+    }
+}

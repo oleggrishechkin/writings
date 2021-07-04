@@ -1,14 +1,14 @@
 {
-  "rules": {
-    "$uid": {
-      "writings": {
-        ".read": "auth.uid != null && auth.uid === $uid",
-        ".write": "auth.uid != null && auth.uid === $uid"
-      },
-      "writingsUpdatedOn": {
-        ".read": "auth.uid != null && auth.uid === $uid",
-        ".write": "auth.uid != null && auth.uid === $uid"
-      }
+    "rules": {
+        "$uid": {
+            "writings": {
+                ".read": "auth.uid != null && auth.uid === $uid",
+                ".write": "auth.uid != null && auth.uid === $uid"
+            },
+            "writingsUpdatedOn": {
+                ".read": "auth.uid != null && auth.uid === $uid",
+                ".write": "auth.uid != null && auth.uid === $uid"
+            }
+        }
     }
-  }
 }

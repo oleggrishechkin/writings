@@ -1,82 +1,32 @@
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import { useSelector } from 'react-tagged-state';
-import styled from 'styled-components';
-import { ReactComponent as CancelIcon } from '../icons/cancel-24px.svg';
-import { ReactComponent as SearchIcon } from '../icons/search-24px.svg';
-import { TSearch } from '../store/states/searchState';
+import cx from 'clsx';
+import CancelIcon from '../icons/CancelIcon';
+import SearchIcon from '../icons/SearchIcon';
 import intlState from '../store/states/intlState';
+import { ISearch } from '../classes/LocalStorage';
+import preventBodyScroll from '../utils/preventBodyScroll';
 import IconButton from './IconButton';
-import TextButton from './TextButton';
 
-interface ISearchInputProps {
+interface IProps {
     className?: string;
-    value: TSearch;
-    onChange: (nextValue: TSearch) => void;
+    value: ISearch;
+    onChange: (nextValue: ISearch) => void;
 }
 
-const StyledSearchInput = styled.div`
-    align-items: center;
-    display: flex;
-`;
-
-const Label = styled.label`
-    align-items: center;
-    background: var(--secondary-background);
-    border-radius: 10px;
-    display: flex;
-    fill: var(--gray);
-    flex: 1 1 auto;
-    padding: 0.5rem;
-    transition: background 300ms;
-    box-shadow: var(--shadowNear);
-    &:active {
-        background: var(--gray-4);
-    }
-`;
-
-const StyledSearchIcon = styled(SearchIcon)`
-    flex: 0 0 auto;
-    fill: var(--gray);
-    filter: drop-shadow(var(--shadowDefault));
-`;
-
-const Input = styled.input`
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    color: inherit;
-    flex: 1 1 auto;
-    font-family: inherit;
-    font-size: var(--fontNormal);
-    line-height: inherit;
-    margin: 0 0.5rem 0 0.5rem;
-    outline: none;
-    user-select: text;
-    width: 100%;
-    &::placeholder {
-        color: var(--gray);
-    }
-`;
-
-const StyledIconButton = styled(IconButton)`
-    filter: drop-shadow(var(--shadowDefault));
-    flex: 0 0 auto;
-`;
-
-const StyledTextButton = styled(TextButton)`
-    flex: 0 0 auto;
-    margin-left: 1rem;
-    text-shadow: var(--shadowNear);
-`;
-
-const SearchInput = ({ className, value = null, onChange }: ISearchInputProps): ReactElement => {
+const SearchInput = ({ className, value = null, onChange }: IProps): ReactElement => {
     const { formatMessage } = useSelector(intlState);
 
     return (
-        <StyledSearchInput className={className}>
-            <Label>
-                <StyledSearchIcon />
-                <Input
+        <div className={cx(className, 'flex items-center')}>
+            <label
+                className={cx(
+                    'active:opacity-50 bg-light-gray-6 cursor-text dark:bg-dark-gray-6 duration-300 flex flex-auto items-center p-2 rounded-xl shadow-xl transition-opacity'
+                )}
+            >
+                <SearchIcon className="dark:text-light-gray-2 flex-shrink-0 mr-2 text-dark-gray-2" />
+                <input
+                    className="dark:placeholder-light-gray-2 placeholder-dark-gray-2 w-full"
                     inputMode="search"
                     value={value || ''}
                     placeholder={formatMessage('search')}
@@ -90,6 +40,8 @@ const SearchInput = ({ className, value = null, onChange }: ISearchInputProps): 
                         if (value === null) {
                             onChange('');
                         }
+
+                        preventBodyScroll();
                     }}
                     onBlur={() => {
                         if (!value) {
@@ -98,15 +50,21 @@ const SearchInput = ({ className, value = null, onChange }: ISearchInputProps): 
                     }}
                 />
                 {!!value && (
-                    <StyledIconButton data-gray onClick={() => onChange('')}>
+                    <IconButton
+                        aria-label="clear"
+                        className="dark:text-light-gray-2 flex-shrink-0 ml-2 text-dark-gray-2"
+                        onClick={() => onChange('')}
+                    >
                         <CancelIcon />
-                    </StyledIconButton>
+                    </IconButton>
                 )}
-            </Label>
+            </label>
             {value !== null && (
-                <StyledTextButton onClick={() => onChange(null)}>{formatMessage('cancel')}</StyledTextButton>
+                <IconButton className="flex-shrink-0 ml-2" onClick={() => onChange(null)}>
+                    {formatMessage('cancel')}
+                </IconButton>
             )}
-        </StyledSearchInput>
+        </div>
     );
 };
 

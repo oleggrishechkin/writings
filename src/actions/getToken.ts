@@ -1,5 +1,5 @@
-import userState, { IUser } from '../store/states/userState';
-import Auth from '../classes/Auth';
+import userState from '../store/states/userState';
+import Auth, { IUser } from '../classes/Auth';
 
 const getToken = async (): Promise<IUser['idToken']> => {
     const user = userState();

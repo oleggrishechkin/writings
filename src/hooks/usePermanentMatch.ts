@@ -1,11 +1,12 @@
+import { match } from 'path-to-regexp';
 import { useMemo } from 'react';
-import Router from '../classes/Router';
+import pathnameState from '../store/states/pathnameState';
 
 const usePermanentMatch = <Type extends Record<string, any>>(path: string): Type =>
     useMemo(() => {
-        const matchResult = Router.match<Type>(path, window.location.pathname);
+        const matched = match(path)(pathnameState());
 
-        return matchResult === false ? ({} as Type) : matchResult;
+        return (matched ? matched.params : {}) as Type;
     }, [path]);
 
 export default usePermanentMatch;

@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .touch-action-none {
+        touch-action: none;
+    }
+}
+@layer base {
+    body {
+        @apply antialiased bg-white dark:bg-dark-gray-4 dark:text-white font-sans select-none text-base text-black;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    #root {
+        @apply h-screen relative w-full;
+    }
+
+    /* reset */
+    * {
+        @apply box-border m-0 p-0;
+    }
+
+    a,
+    input,
+    select,
+    button {
+        @apply bg-transparent border-0 outline-none rounded-none;
+        color: inherit;
+        font-family: inherit;
+        font-weight: normal;
+        font-size: inherit;
+        line-height: inherit;
+    }
+
+    a {
+        @apply no-underline;
+    }
+
+    input {
+        @apply select-text;
+    }
+
+    button {
+        @apply cursor-pointer;
+    }
+
+    svg {
+        @apply fill-current;
+    }
+}
+
+@layer components {
+    .content-editable {
+        @apply bg-transparent border-0 break-words cursor-text outline-none select-text;
+    }
+
+    /* important styles for cross-platform consistent output */
+    .content-editable * {
+        @apply bg-transparent not-italic;
+        -webkit-tap-highlight-color: transparent;
+        color: inherit;
+        font-weight: normal;
+        font-size: inherit;
+        font-family: inherit;
+        text-decoration-line: none;
+    }
+
+    .content-editable h1 {
+        @apply my-2 text-2xl;
+    }
+
+    .content-editable ol,
+    .content-editable ul {
+        @apply my-2 pl-12;
+    }
+}

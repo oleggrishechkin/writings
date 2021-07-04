@@ -1,45 +1,36 @@
-import writingsState, { IWriting } from '../store/states/writingsState';
-import userState from '../store/states/userState';
-import toUrl from '../utils/toUrl';
-import toArray from '../utils/toArray';
-import toObject from '../utils/toObject';
+import writingsState from '../store/states/writingsState';
+import objectToArray from '../utils/objectToArray';
+import arrayToObject from '../utils/arrayToObject';
+import LocalStorage from '../classes/LocalStorage';
+import withCache from '../utils/withCache';
 import IndexedDB from '../classes/IndexedDB';
 import Database from '../classes/Database';
-import FetchCache from '../classes/FetchCache';
-import LocalStorage from '../classes/LocalStorage';
+import getLocalId from './getLocalId';
 
-const fetchWritings = FetchCache.withCache(
+const fetchWritings = withCache(
     () => 'fetchWritings',
     async (): Promise<void> => {
-        const indexedDBResult = toObject<IWriting>(
-            (await IndexedDB.getAll<IWriting>(IndexedDB.paths.writings)) as IWriting[],
-            'id'
-        );
+        const indexedDBResult = arrayToObject(await IndexedDB.getAll('writings'), 'id');
 
         writingsState(indexedDBResult);
 
-        const writingsUpdatedOn =
-            (await Database.get<number>(toUrl(Database.paths.writingsUpdatedOn, { userId: userState()?.localId }))) ||
-            0;
+        const writingsUpdatedOn = (await Database.get((db) => db[getLocalId()].writingsUpdatedOn)) || 0;
 
         if (!writingsUpdatedOn) {
-            await IndexedDB.clear(IndexedDB.paths.writings);
+            await IndexedDB.clear('writings');
 
             writingsState({});
 
             return;
         }
 
-        if (writingsUpdatedOn > (LocalStorage.get<number>(LocalStorage.paths.writingsUpdatedOn) || 0)) {
-            const databaseResult =
-                (await Database.get<Record<string, IWriting>>(
-                    toUrl(Database.paths.writings, { userId: userState()?.localId })
-                )) || {};
+        if (writingsUpdatedOn > (LocalStorage.get('writingsUpdatedOn') || 0)) {
+            const databaseResult = (await Database.get((db) => db[getLocalId()].writings)) || {};
 
-            await IndexedDB.putAll(IndexedDB.paths.writings, toArray(databaseResult));
+            await IndexedDB.putAll('writings', objectToArray(databaseResult));
 
             writingsState(databaseResult);
-            LocalStorage.set(LocalStorage.paths.writingsUpdatedOn, Date.now());
+            LocalStorage.set('writingsUpdatedOn', Date.now());
         }
     }
 );

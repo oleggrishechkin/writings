@@ -1,53 +1,45 @@
-import { Fragment, ReactElement } from 'react';
-import './css/variables/colors.css';
-import './css/variables/fonts.css';
-import './css/variables/shadows.css';
-import './css/reset.css';
-import './css/body.css';
-import './css/root.css';
-import { useSelector } from 'react-tagged-state';
+import React, { ReactElement } from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
-import ErrorPage from './components/ErrorPage';
-import GreetingsPage from './components/GreetingsPage';
-import Page from './components/Page';
-import WritingPage from './components/WritingPage';
-import WritingsPage from './components/WritingsPage';
-import userState from './store/states/userState';
-import pathnameState from './store/states/pathnameState';
+import OopsPage from './components/pages/OopsPage';
+import HelloPage from './components/pages/HelloPage';
+import WritingPage from './components/pages/WritingPage';
+import WritingsPage from './components/pages/WritingsPage';
 import useTouchEvents from './hooks/useTouchEvents';
-import useVisualViewport from './hooks/useVisualViewport';
-import Router from './classes/Router';
+import Route from './components/Route';
+import PrivateRoute from './components/PrivateRoute';
+import Page from './components/Page';
+import useVisualViewportHeight from './hooks/useVisualViewportHeight';
 
 const App = (): ReactElement => {
-    const pathname = useSelector(pathnameState);
-    const user = useSelector(userState);
-
     useTouchEvents();
-    useVisualViewport();
+    useVisualViewportHeight();
 
     return (
         <ErrorBoundary
             fallback={
-                <Page opened>
-                    <ErrorPage />
+                <Page opened root>
+                    <OopsPage />
                 </Page>
             }
         >
-            {!user && (
-                <Page opened>
-                    <GreetingsPage />
-                </Page>
-            )}
-            {!!user && (
-                <Fragment>
-                    <Page opened={!!Router.match(Router.paths.writings, pathname)} base>
+            <PrivateRoute
+                fallback={
+                    <Page opened root>
+                        <HelloPage />
+                    </Page>
+                }
+            >
+                <Route path="/">
+                    <Page root>
                         <WritingsPage />
                     </Page>
-                    <Page opened={!!Router.match(Router.paths.writing, pathname)}>
+                </Route>
+                <Route path="/writings/:writingId">
+                    <Page>
                         <WritingPage />
                     </Page>
-                </Fragment>
-            )}
+                </Route>
+            </PrivateRoute>
         </ErrorBoundary>
     );
 };

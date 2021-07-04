@@ -1,5 +1,0 @@
-html {
-    --shadowNear: 3px 3px 3px var(--shadow-light);
-    --shadowDefault: 6px 6px 6px var(--shadow-normal);
-    --shadowFar: 9px 9px 9px var(--shadow-strong);
-}

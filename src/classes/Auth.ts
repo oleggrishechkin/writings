@@ -1,10 +1,20 @@
-import toSearch from '../utils/toSearch';
-import config from '../config';
+import paramsToSearch from '../utils/paramsToSearch';
+import firebaseConfig from '../firebase.config.json';
 import getExpires from '../utils/getExpires';
-import { IUser } from '../store/states/userState';
-import toParams from '../utils/toParams';
+import searchToParams from '../utils/searchToParams';
 
-class IAuth {
+export interface IUser {
+    localId: string;
+    photoUrl: string;
+    displayName: string;
+    email: string;
+    idToken: string;
+    refreshToken: string;
+    expiresIn: string;
+    expires: number;
+}
+
+class AuthClass {
     readonly #apiKey: string;
     readonly #continueUri: string;
 
@@ -13,14 +23,10 @@ class IAuth {
         this.#continueUri = continueUri;
     }
 
-    static postFetch(response: Response) {
-        return response.json();
-    }
-
     private createAuthUri(): Promise<{ authUri: string; sessionId: string }> {
         return window
             .fetch(
-                `https://identitytoolkit.googleapis.com/v1/accounts:createAuthUri${toSearch({
+                `https://identitytoolkit.googleapis.com/v1/accounts:createAuthUri${paramsToSearch({
                     key: this.#apiKey
                 })}`,
                 {
@@ -34,13 +40,13 @@ class IAuth {
                     })
                 }
             )
-            .then(IAuth.postFetch);
+            .then((response) => response.json());
     }
 
     private signInWithIdp(requestUri: string, sessionId: string): Promise<IUser> {
         return window
             .fetch(
-                `https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp${toSearch({
+                `https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp${paramsToSearch({
                     key: this.#apiKey
                 })}`,
                 {
@@ -54,8 +60,32 @@ class IAuth {
                     })
                 }
             )
-            .then(IAuth.postFetch)
+            .then((response) => response.json())
             .then((response: IUser) => ({ ...response, expires: getExpires(response.expiresIn) }));
+    }
+
+    refreshToken(refreshToken: string): Promise<{
+        idToken: IUser['idToken'];
+        refreshToken: IUser['refreshToken'];
+        expiresIn: IUser['expiresIn'];
+        expires: IUser['expires'];
+    }> {
+        return window
+            .fetch(`https://securetoken.googleapis.com/v1/token${paramsToSearch({ key: this.#apiKey })}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: paramsToSearch({
+                    grant_type: 'refresh_token',
+                    refresh_token: refreshToken
+                }).slice(1)
+            })
+            .then((response) => response.json())
+            .then((response: { id_token: string; refresh_token: string; expires_in: string }) => ({
+                idToken: response.id_token,
+                refreshToken: response.refresh_token,
+                expiresIn: response.expires_in,
+                expires: getExpires(response.expires_in)
+            }));
     }
 
     async signInWithGoogle(): Promise<IUser> {
@@ -81,7 +111,7 @@ class IAuth {
                 'message',
                 (event) => {
                     const { href, search, hash } = JSON.parse(event.data);
-                    const error = toParams(search).error || toParams(hash).error;
+                    const error = searchToParams(search).error || searchToParams(hash).error;
 
                     oauthWindow.close();
 
@@ -99,32 +129,8 @@ class IAuth {
 
         return this.signInWithIdp(requestUri, sessionId);
     }
-
-    refreshToken(refreshToken: string): Promise<{
-        idToken: string;
-        refreshToken: string;
-        expiresIn: string;
-        expires: number;
-    }> {
-        return window
-            .fetch(`https://securetoken.googleapis.com/v1/token${toSearch({ key: this.#apiKey })}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: toSearch({
-                    grant_type: 'refresh_token',
-                    refresh_token: refreshToken
-                }).slice(1)
-            })
-            .then(IAuth.postFetch)
-            .then((response: { id_token: string; refresh_token: string; expires_in: string }) => ({
-                idToken: response.id_token,
-                refreshToken: response.refresh_token,
-                expiresIn: response.expires_in,
-                expires: getExpires(response.expires_in)
-            }));
-    }
 }
 
-const Auth = new IAuth(config.firebase);
+const Auth = new AuthClass(firebaseConfig);
 
 export default Auth;

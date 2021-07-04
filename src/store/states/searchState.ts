@@ -2,14 +2,12 @@ import { createState } from 'react-tagged-state';
 import resetEvent from '../events/resetEvent';
 import LocalStorage from '../../classes/LocalStorage';
 
-export type TSearch = null | string;
+const getInitialState = () => LocalStorage.get('state/search') || null;
 
-const getInitialState = (): TSearch => LocalStorage.get(LocalStorage.paths.search) || null;
-
-const searchState = createState<TSearch>(getInitialState());
+const searchState = createState(getInitialState());
 
 searchState``((search) => {
-    LocalStorage.set(LocalStorage.paths.search, search);
+    LocalStorage.set('state/search', search);
 });
 
 resetEvent``(() => {

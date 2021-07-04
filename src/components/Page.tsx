@@ -1,63 +1,31 @@
-import { Fragment, ReactElement } from 'react';
-import styled from 'styled-components';
+import React, { ReactElement } from 'react';
+import cx from 'clsx';
 import useTransition from '../hooks/useTransition';
 
-interface IPageProps {
+interface IProps {
     opened?: boolean;
-    base?: boolean;
+    root?: boolean;
     children: any;
 }
 
-const Overlay = styled.div`
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    transition: background 300ms;
-    z-index: 1;
-    background: var(--shadow-normal);
-    &[data-transition='opening'] {
-        background: transparent;
-    }
-    &[data-transition='close'] {
-        background: transparent;
-    }
-`;
-
-const StyledPage = styled.section`
-    background: var(--background);
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-    overflow: hidden;
-    transition: transform 300ms, border-radius 300ms;
-    &[data-transition='opening'] {
-        transform: translate3d(100%, 0, 0);
-        border-top-left-radius: 20px;
-        border-bottom-left-radius: 20px;
-    }
-    &[data-transition='close'] {
-        transform: translate3d(100%, 0, 0);
-        border-top-left-radius: 20px;
-        border-bottom-left-radius: 20px;
-    }
-`;
-
-const Page = ({ opened = false, base = false, children }: IPageProps): ReactElement => {
-    const transition = useTransition(opened, 300);
+const Page = ({ opened, root, children }: IProps): ReactElement => {
+    const transition = useTransition(!!opened, 300);
 
     return (
-        <Fragment>
+        <>
             {transition !== 'closed' && (
-                <Overlay data-transition={base ? null : transition}>
-                    <StyledPage data-transition={base ? null : transition}>{children}</StyledPage>
-                </Overlay>
+                <div className="absolute flex flex-col h-full left-0 top-0 w-full z-10">
+                    <div
+                        className={cx(
+                            'bg-white dark:bg-dark-gray-4 duration-300 flex flex-auto flex-col overflow-auto px-4 py-8 shadow-l-xl transform-gpu transition-transform',
+                            !root && !['opening', 'opened'].includes(transition) && 'translate-x-full'
+                        )}
+                    >
+                        {children}
+                    </div>
+                </div>
             )}
-        </Fragment>
+        </>
     );
 };
 

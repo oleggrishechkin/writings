@@ -1,59 +1,52 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
-export type TTransition = 'open' | 'opening' | 'opened' | 'close' | 'closing' | 'closed';
+type ITransition = 'open' | 'opening' | 'opened' | 'close' | 'closing' | 'closed';
 
-const useTransition = (opened: boolean, duration: number): TTransition => {
-    const [state, setState] = useState<TTransition>(() => (opened ? 'opened' : 'closed'));
-    const durationRef = useRef(duration);
+const useTransition = (opened: boolean, duration: number): ITransition => {
+    const [state, setState] = useState<ITransition>(opened ? 'opened' : 'closed');
 
-    durationRef.current = duration;
-
+    useEffect(
+        () => () => {
+            setState(opened ? 'close' : 'open');
+        },
+        [opened]
+    );
     useEffect(() => {
-        setState((prevState) => {
-            if ((opened ? 'opened' : 'closed') === prevState) {
-                return prevState;
-            }
-
-            return opened ? 'opening' : 'closing';
-        });
-    }, [opened]);
-    useEffect(() => {
-        let timeoutId: number;
+        let timeoutId: any;
 
         switch (state) {
-            case 'opening': {
-                timeoutId = window.setTimeout(() => {
-                    setState('open');
-                });
-
-                return;
-            }
             case 'open': {
-                timeoutId = window.setTimeout(() => {
-                    setState('opened');
-                }, durationRef.current);
-
-                return;
-            }
-            case 'closing': {
-                timeoutId = window.setTimeout(() => {
-                    setState('close');
+                timeoutId = setTimeout(() => {
+                    setState('opening');
                 });
 
-                return;
+                break;
+            }
+            case 'opening': {
+                timeoutId = setTimeout(() => {
+                    setState('opened');
+                }, duration);
+
+                break;
             }
             case 'close': {
-                timeoutId = window.setTimeout(() => {
-                    setState('closed');
-                }, durationRef.current);
+                timeoutId = setTimeout(() => {
+                    setState('closing');
+                });
 
-                return;
+                break;
+            }
+            case 'closing': {
+                timeoutId = setTimeout(() => {
+                    setState('closed');
+                }, duration);
             }
         }
 
         return () => {
-            window.clearTimeout(timeoutId);
+            clearTimeout(timeoutId);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [state]);
 
     return state;

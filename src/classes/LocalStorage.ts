@@ -1,20 +1,27 @@
-class ILocalStorage {
-    readonly paths = {
-        user: 'state/user',
-        lang: 'state/lang',
-        theme: 'state/theme',
-        search: 'state/search',
-        writingsUpdatedOn: 'writingsUpdatedOn',
-        savedScroll: 'savedScroll'
-    };
+import { IBrowserLang } from '../utils/getBrowserLang';
+import { IUser } from './Auth';
 
-    constructor() {}
+export type ILang = null | IBrowserLang;
 
-    set(key: string, data: any): void {
+export type ITheme = null | 'light' | 'dark';
+
+export type ISearch = null | string;
+
+interface ILocalStorageScheme {
+    'state/user': IUser | null;
+    'state/lang': ILang;
+    'state/theme': ITheme;
+    'state/search': ISearch;
+    writingsUpdatedOn: number;
+    savedScroll: Record<string, number>;
+}
+
+class LocalStorageClass {
+    set<Type extends keyof ILocalStorageScheme>(key: Type, data: ILocalStorageScheme[Type]): void {
         window.localStorage.setItem(key, JSON.stringify(data));
     }
 
-    get<Type>(key: string): Type {
+    get<Type extends keyof ILocalStorageScheme>(key: Type): ILocalStorageScheme[Type] {
         const item = window.localStorage.getItem(key);
 
         return item ? JSON.parse(item) : item;
@@ -25,6 +32,6 @@ class ILocalStorage {
     }
 }
 
-const LocalStorage = new ILocalStorage();
+const LocalStorage = new LocalStorageClass();
 
 export default LocalStorage;

@@ -1,12 +1,12 @@
 import resetEvent from '../store/events/resetEvent';
-import IndexedDB from '../classes/IndexedDB';
-import FetchCache from '../classes/FetchCache';
 import LocalStorage from '../classes/LocalStorage';
+import withCache from '../utils/withCache';
+import IndexedDB from '../classes/IndexedDB';
 
 const signOut = async (): Promise<void> => {
     await IndexedDB.clearAll();
 
-    FetchCache.clear();
+    withCache.clear();
     LocalStorage.clear();
     resetEvent();
 };

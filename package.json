@@ -1,85 +1,72 @@
 {
-  "name": "writings",
-  "version": "1.0.0",
-  "description": "App for writers",
-  "homepage": "https://writings-1.web.app",
-  "license": "MIT",
-  "author": {
-    "name": "Oleg Grishechkin",
-    "email": "oleggrishechkin@gmail.com",
-    "url": "https://github.com/oleggrishechkin"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/oleggrishechkin/writings"
-  },
-  "private": true,
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "serve": "react-scripts build && serve build",
-    "deploy": "npm run build && firebase deploy",
-    "lint": "eslint --quiet .",
-    "lint:fix": "eslint --quiet --fix ."
-  },
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.12.0",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^13.1.9",
-    "@types/qs": "^6.9.6",
-    "@types/react": "^17.0.6",
-    "@types/react-dom": "^17.0.5",
-    "@types/styled-components": "^5.1.9",
-    "@types/uuid": "^8.3.0",
-    "babel-plugin-styled-components": "^1.12.0",
-    "configs-og": "^2.0.16",
-    "date-fns": "^2.22.1",
-    "qs": "^6.10.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "^4.0.3",
-    "react-tagged-state": "^0.1.51",
-    "serve": "^11.3.2",
-    "styled-components": "^5.3.0",
-    "typescript": "^4.2.4",
-    "uuid": "^8.3.2"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "eslintConfig": {
-    "extends": [
-      "./node_modules/configs-og/.eslintrc.js"
-    ]
-  },
-  "babel": {
-    "presets": [
-      "configs-og/babel.config.js"
-    ],
-    "plugins": [
-      "babel-plugin-styled-components"
-    ]
-  },
-  "prettier": "configs-og/prettier.config.js",
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
+    "name": "writings",
+    "version": "1.0.0",
+    "description": "App for writers",
+    "homepage": "https://writings-1.web.app",
+    "license": "MIT",
+    "author": {
+        "name": "Oleg Grishechkin",
+        "email": "oleggrishechkin@gmail.com",
+        "url": "https://github.com/oleggrishechkin"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/oleggrishechkin/writings"
+    },
+    "scripts": {
+        "dev": "vite --host",
+        "build": "tsc && vite build",
+        "serve": "vite preview",
+        "deploy": "npm run build && firebase deploy",
+        "prettier:fix": "prettier --write .",
+        "lint": "eslint --quiet .",
+        "lint:fix": "eslint --quiet --fix .",
+        "icons": "npx @svgr/cli --template svgr.template.js --typescript --svg-props 'viewBox=0 0 24 24' -d src/icons src/icons && node svgr.after.js"
+    },
+    "dependencies": {
+        "clsx": "^1.1.1",
+        "path-to-regexp": "^6.2.0",
+        "react": "^17.0.0",
+        "react-dom": "^17.0.0",
+        "react-tagged-state": "^0.1.51",
+        "uuid": "^8.3.2"
+    },
+    "devDependencies": {
+        "@types/node": "^16.0.0",
+        "@types/react": "^17.0.0",
+        "@types/react-dom": "^17.0.0",
+        "@types/uuid": "^8.3.0",
+        "@vitejs/plugin-react-refresh": "^1.3.1",
+        "autoprefixer": "^10.2.6",
+        "configs-og": "^2.0.16",
+        "postcss": "^8.3.5",
+        "prettier-plugin-sort-class-names": "^3.0.1",
+        "tailwindcss": "^2.2.4",
+        "typescript": "^4.3.2",
+        "vite": "^2.3.8"
+    },
+    "eslintConfig": {
+        "extends": [
+            "./node_modules/configs-og/.eslintrc.js"
+        ],
+        "rules": {
+            "no-use-before-define": 0
+        }
+    },
+    "babel": {
+        "presets": [
+            "configs-og/babel.config.js"
+        ]
+    },
+    "prettier": "configs-og/prettier.config.js",
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.(js|jsx|ts|tsx)": [
+            "eslint --quiet"
+        ]
     }
-  },
-  "lint-staged": {
-    "*.(js|jsx|ts|tsx)": [
-      "eslint --quiet"
-    ]
-  }
 }

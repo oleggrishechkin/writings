@@ -1,97 +1,50 @@
-import { FocusEventHandler, HTMLAttributes, ReactElement, useEffect, useRef } from 'react';
-import styled from 'styled-components';
-import EditorRender from './EditorRender';
+import React, { FocusEventHandler, HTMLAttributes, ReactElement } from 'react';
+import cx from 'clsx';
+import RichUtils from '../classes/RichUtils';
+import preventDefault from '../utils/preventDefault';
+import preventBodyScroll from '../utils/preventBodyScroll';
 
-interface IEditorProps {
+interface IProps {
     className?: string;
-    placeholder?: string;
     inputMode?: HTMLAttributes<HTMLInputElement>['inputMode'];
     value?: string;
     onChange: (html: string) => void;
     onFocus?: FocusEventHandler;
-    style?: Record<string, string | number>;
     onBlur?: FocusEventHandler;
 }
 
-const StyledEditor = styled(EditorRender)`
-    cursor: text;
-    user-select: text;
-    &:empty:before {
-        color: var(--gray);
-        content: attr(data-placeholder);
-    }
-`;
-
-const Editor = ({
-    className,
-    placeholder,
-    inputMode,
-    value,
-    onChange,
-    onFocus,
-    style,
-    onBlur
-}: IEditorProps): ReactElement => {
-    const ref = useRef<HTMLDivElement>(null);
-    const valueRef = useRef<typeof value>(value || '');
-    const onChangeRef = useRef<typeof onChange>(onChange);
-
-    valueRef.current = value || '';
-    onChangeRef.current = onChange;
-
-    useEffect(() => {
-        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-            if (ref.current && valueRef.current !== ref.current.innerHTML) {
-                event.returnValue = false;
+const Editor = ({ className, inputMode, value, onChange, onFocus, onBlur }: IProps): ReactElement => (
+    <div
+        inputMode={inputMode}
+        className={cx(className, 'content-editable')}
+        translate="no"
+        spellCheck={false}
+        contentEditable
+        dangerouslySetInnerHTML={{ __html: value || '' }}
+        onFocus={(event) => {
+            if (onFocus) {
+                onFocus(event);
             }
-        };
 
-        window.addEventListener('beforeunload', handleBeforeUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-
-            if (ref.current && valueRef.current !== ref.current.innerHTML) {
-                onChangeRef.current(ref.current.innerHTML);
+            preventBodyScroll(event);
+            RichUtils.styleWithCss();
+        }}
+        onBlur={(event) => {
+            if (onBlur) {
+                onBlur(event);
             }
-        };
-    }, []);
 
-    return (
-        <StyledEditor
-            inputMode={inputMode}
-            ref={ref}
-            style={style}
-            className={className}
-            data-placeholder={placeholder}
-            translate="no"
-            spellCheck={false}
-            contentEditable
-            value={valueRef.current}
-            onFocus={(event) => {
-                if (onFocus) {
-                    onFocus(event);
-                }
+            const html = (event.target as HTMLDivElement).innerHTML;
 
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                document.execCommand('styleWithCss', false, true);
-            }}
-            onBlur={(event) => {
-                if (onBlur) {
-                    onBlur(event);
-                }
-
-                if (valueRef.current !== event.target.innerHTML && onChange) {
-                    onChange(event.target.innerHTML);
-                }
-            }}
-            onPaste={(event) => {
-                event.preventDefault();
-                document.execCommand('insertText', false, event.clipboardData.getData('text/plain'));
-            }}
-        />
-    );
-};
+            if (html !== value) {
+                onChange(html);
+            }
+        }}
+        onPaste={(event) => {
+            preventDefault(event);
+            RichUtils.insertText(event.clipboardData.getData('text/plain'));
+        }}
+    />
+);
 
 export default Editor;

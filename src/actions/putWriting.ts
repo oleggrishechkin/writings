@@ -1,17 +1,20 @@
-import writingsState, { IWriting } from '../store/states/writingsState';
+import writingsState from '../store/states/writingsState';
 import add from '../store/updaters/add';
-import userState from '../store/states/userState';
-import toUrl from '../utils/toUrl';
+import Database, { IWriting } from '../classes/Database';
 import IndexedDB from '../classes/IndexedDB';
-import Database from '../classes/Database';
 import putWritingsUpdatedOn from './putWritingsUpdatedOn';
+import getLocalId from './getLocalId';
 
 const putWriting = async (writingId: string, data: Partial<IWriting>): Promise<void> => {
-    const localId = userState()?.localId;
+    if (!writingId) {
+        return;
+    }
+
+    const localId = getLocalId();
     const writing = writingsState()[writingId];
     const extendedWriting: IWriting = {
         id: writingId,
-        createdBy: localId as string,
+        createdBy: localId,
         createdOn: Date.now(),
         title: '',
         content: '',
@@ -22,9 +25,9 @@ const putWriting = async (writingId: string, data: Partial<IWriting>): Promise<v
 
     writingsState(add(writingId, extendedWriting));
 
-    await Database.put(toUrl(Database.paths.writing, { userId: localId, writingId }), extendedWriting);
+    await Database.put((db) => db[getLocalId()].writings[writingId], extendedWriting);
     await putWritingsUpdatedOn();
-    await IndexedDB.put(IndexedDB.paths.writings, extendedWriting);
+    await IndexedDB.put('writings', extendedWriting);
 };
 
 export default putWriting;

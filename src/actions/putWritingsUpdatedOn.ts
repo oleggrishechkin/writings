@@ -1,14 +1,13 @@
-import toUrl from '../utils/toUrl';
-import userState from '../store/states/userState';
-import Database from '../classes/Database';
 import LocalStorage from '../classes/LocalStorage';
+import Database from '../classes/Database';
+import getLocalId from './getLocalId';
 
 const putWritingsUpdatedOn = async (): Promise<void> => {
     const updatedOn = Date.now();
 
-    LocalStorage.set(LocalStorage.paths.writingsUpdatedOn, updatedOn);
+    LocalStorage.set('writingsUpdatedOn', updatedOn);
 
-    await Database.put(toUrl(Database.paths.writingsUpdatedOn, { userId: userState()?.localId }), updatedOn);
+    await Database.put((db) => db[getLocalId()].writingsUpdatedOn, updatedOn);
 };
 
 export default putWritingsUpdatedOn;

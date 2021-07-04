@@ -1,67 +1,34 @@
-import { ReactElement } from 'react';
-import styled from 'styled-components';
+import React, { ReactElement } from 'react';
 import { useSelector } from 'react-tagged-state';
-import { IWriting } from '../store/states/writingsState';
-import toUrl from '../utils/toUrl';
+import cx from 'clsx';
 import intlState from '../store/states/intlState';
-import Router from '../classes/Router';
-import useMenu from '../hooks/useMenu';
-import useLongTouch from '../hooks/useLongTouch';
+import { IWriting } from '../classes/Database';
 import Link from './Link';
-import ToggledDate from './ToggledDate';
-import Modal from './Modal';
-import WritingModal from './WritingModal';
 
-interface IWritingProps {
+interface IProps {
     className?: string;
     writing: IWriting;
 }
 
-const StyledWriting = styled(Link)`
-    box-shadow: var(--boxShadow);
-    background: var(--secondary-background);
-    border-radius: 10px;
-    display: flex;
-    overflow: hidden;
-    padding: 1rem;
-    flex-direction: column;
-    transition: background 300ms, transform 300ms;
-    justify-content: space-between;
-    &:active {
-        background: var(--gray-4);
-        transform: scale(1.1);
-    }
-    > *:not(:last-child) {
-        margin-bottom: 0.5rem;
-    }
-`;
-
-const Title = styled.div`
-    font-size: var(--fontNormal);
-    font-weight: bold;
-    white-space: nowrap;
-    text-shadow: var(--shadowDefault);
-`;
-
-const Writing = ({ className, writing }: IWritingProps): ReactElement => {
+const Writing = ({ className, writing }: IProps): ReactElement => {
     const { formatMessage } = useSelector(intlState);
-    const writingModal = useMenu();
-    const [onTouchStart, onTouchEndOrMove] = useLongTouch(writingModal.open);
 
     return (
-        <StyledWriting
-            className={className}
-            href={toUrl(Router.paths.writing, { writingId: writing.id })}
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEndOrMove}
-            onTouchMove={onTouchEndOrMove}
+        <Link
+            className={cx(
+                className,
+                'active:opacity-50 duration-300 flex flex-col items-center p-2 transition-opacity'
+            )}
+            href={`/writings/${writing.id}`}
         >
-            <Modal opened={writingModal.opened} onClose={writingModal.close}>
-                <WritingModal writingId={writing.id} writing={writing} onClose={writingModal.close} />
-            </Modal>
-            <Title>{writing.title || formatMessage('noTitle')}</Title>
-            <ToggledDate createdOn={writing.createdOn} updatedOn={writing.updatedOn} disabled />
-        </StyledWriting>
+            <div className="bg-white flex flex-col h-20 leading-none mb-4 px-2 py-2 relative rounded-lg shadow-xl text-[0.2rem] text-black w-16">
+                <div
+                    className="flex-auto overflow-hidden"
+                    dangerouslySetInnerHTML={{ __html: writing.content.slice(0, 1000) }}
+                />
+            </div>
+            <span className="max-w-full truncate">{writing.title || formatMessage('noTitle')}</span>
+        </Link>
     );
 };
 

@@ -1,5 +1,5 @@
 import writingsState from '../store/states/writingsState';
-import toText from '../utils/toText';
+import htmlToText from '../utils/htmlToText';
 
 const shareWriting = async (writingId: string): Promise<void> => {
     const writing = writingsState()[writingId];
@@ -11,12 +11,12 @@ const shareWriting = async (writingId: string): Promise<void> => {
     if (window.navigator.share) {
         await window.navigator.share({
             title: writing.title,
-            text: toText(writing.content)
+            text: htmlToText(writing.content)
         });
     }
 
     if (window.navigator.clipboard.writeText) {
-        await window.navigator.clipboard.writeText(`${writing.title}\n${toText(writing.content)}`);
+        await window.navigator.clipboard.writeText(`${writing.title}\n${htmlToText(writing.content)}`);
     }
 };
 

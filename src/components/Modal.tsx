@@ -1,76 +1,41 @@
-import { ReactElement } from 'react';
-import styled from 'styled-components';
+import React, { ReactElement } from 'react';
+import cx from 'clsx';
 import useTransition from '../hooks/useTransition';
+import useOutsideClick from '../hooks/useOutsideClick';
+import useSlideDown from '../hooks/useSlideDown';
 import Portal from './Portal';
+import Handler from './Handler';
 
-interface IModalProps {
-    opened: boolean;
+interface IProps {
+    opened?: boolean;
     onClose: () => void;
     children: any;
 }
 
-const Overlay = styled.div`
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    transition: background 300ms;
-    justify-content: flex-end;
-    z-index: 2;
-    background: var(--shadow-normal);
-    &[data-transition='opening'] {
-        background: transparent;
-    }
-    &[data-transition='close'] {
-        background: transparent;
-    }
-`;
-
-const StyledModal = styled.div`
-    background: var(--background);
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    max-height: calc(100% - 28px);
-    display: flex;
-    flex: 0 1 auto;
-    flex-direction: column;
-    transition: transform 300ms;
-    overflow: hidden;
-    &[data-transition='opening'] {
-        transform: translate3d(0, 100%, 0);
-    }
-    &[data-transition='close'] {
-        transform: translate3d(0, 100%, 0);
-    }
-`;
-
-const Modal = ({ opened, onClose, children }: IModalProps): ReactElement => {
-    const transition = useTransition(opened, 300);
+const Modal = ({ opened, children, onClose }: IProps): ReactElement => {
+    const transition = useTransition(!!opened, 300);
+    const ref = useOutsideClick<HTMLDivElement>(onClose);
+    const { onTouchStart, dragging, diff } = useSlideDown(onClose);
 
     return (
         <Portal opened={transition !== 'closed'}>
-            <Overlay
-                data-transition={transition}
-                onClick={(event) => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    onClose();
-                }}
+            <div
+                className="absolute flex flex-col h-screen justify-end left-0 top-0 w-full z-10"
+                onTouchStart={() => {}}
             >
-                <StyledModal
-                    data-transition={transition}
-                    onClick={(event) => {
-                        event.stopPropagation();
-                        event.preventDefault();
-                    }}
+                <div
+                    ref={ref}
+                    className={cx(
+                        'bg-white dark:bg-dark-gray-4 duration-300 flex flex-col max-h-[calc(100%-2rem)] overflow-auto pb-8 px-4 rounded-t-3xl shadow-t-xl transform-gpu transition-transform',
+                        !['opening', 'opened'].includes(transition) && 'translate-y-full',
+                        dragging && 'transition-none'
+                    )}
+                    style={diff > 0 ? { transform: `translate3d(0, ${diff}px, 0)` } : undefined}
                 >
+                    <Handler className="mb-8 sticky top-0 z-10" onClose={onClose} onTouchStart={onTouchStart} />
                     {children}
-                </StyledModal>
-            </Overlay>
+                </div>
+            </div>
         </Portal>
     );
 };

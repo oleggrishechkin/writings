@@ -1,42 +1,27 @@
-import { ReactElement, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { useSelector } from 'react-tagged-state';
-import styled from 'styled-components';
+import cx from 'clsx';
 import intlState from '../store/states/intlState';
 
-interface IDateProps {
+interface IProps {
     className?: string;
-    disabled?: boolean;
-    createdOn: number;
-    updatedOn: number;
+    createdOn?: number;
+    updatedOn?: number;
 }
 
-const StyledDate = styled.div`
-    color: var(--gray);
-    font-size: var(--fontSmall);
-    white-space: nowrap;
-    &[data-disabled='true'] {
-        pointer-events: none;
-    }
-`;
-
-const ToggledDate = ({ className, disabled, createdOn, updatedOn }: IDateProps): ReactElement => {
+const ToggledDate = ({ className, createdOn = Date.now(), updatedOn = Date.now() }: IProps): ReactElement => {
     const [isCreated, setIsCreated] = useState<null | boolean>(null);
     const { formatMessage, formatDate } = useSelector(intlState);
 
     return (
-        <StyledDate
-            data-disabled={disabled}
-            className={className}
-            onClick={(event) => {
-                event.stopPropagation();
-                event.preventDefault();
-                setIsCreated((currentIsCreated) => !currentIsCreated);
-            }}
+        <span
+            className={cx(className, 'dark:text-light-gray-2 text-dark-gray-2 text-xs')}
+            onClick={() => setIsCreated((currentIsCreated) => !currentIsCreated)}
         >
             {`${isCreated === null ? '' : `${formatMessage(isCreated ? 'created' : 'edited')}: `}${formatDate(
                 isCreated ? createdOn : updatedOn
             )}`}
-        </StyledDate>
+        </span>
     );
 };
 

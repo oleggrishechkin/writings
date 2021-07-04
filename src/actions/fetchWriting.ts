@@ -1,28 +1,28 @@
-import writingsState, { IWriting } from '../store/states/writingsState';
+import writingsState from '../store/states/writingsState';
 import add from '../store/updaters/add';
-import userState from '../store/states/userState';
-import toUrl from '../utils/toUrl';
 import remove from '../store/updaters/remove';
+import withCache from '../utils/withCache';
 import IndexedDB from '../classes/IndexedDB';
 import Database from '../classes/Database';
-import FetchCache from '../classes/FetchCache';
+import getLocalId from './getLocalId';
 
-const fetchWriting = FetchCache.withCache(
+const fetchWriting = withCache(
     (writingId: string) => `fetchWriting/${writingId}`,
     async (writingId: string): Promise<void> => {
-        const indexedDBResult = (await IndexedDB.get<IWriting>(IndexedDB.paths.writings, writingId)) as IWriting;
+        if (!writingId) {
+            return;
+        }
+
+        const indexedDBResult = await IndexedDB.get('writings', writingId);
 
         if (indexedDBResult) {
             writingsState(add(writingId, indexedDBResult));
         }
 
-        const writingUpdatedOn =
-            (await Database.get<number>(
-                toUrl(Database.paths.writingUpdatedOn, { userId: userState()?.localId, writingId })
-            )) || 0;
+        const writingUpdatedOn = (await Database.get((db) => db[getLocalId()].writings[writingId].updatedOn)) || 0;
 
         if (!writingUpdatedOn) {
-            await IndexedDB.delete(IndexedDB.paths.writings, writingId);
+            await IndexedDB.delete('writings', writingId);
 
             writingsState(remove(writingId));
 
@@ -30,11 +30,9 @@ const fetchWriting = FetchCache.withCache(
         }
 
         if (writingUpdatedOn > (writingsState()[writingId]?.updatedOn || 0)) {
-            const databaseResult = await Database.get<IWriting>(
-                toUrl(Database.paths.writing, { userId: userState()?.localId, writingId })
-            );
+            const databaseResult = await Database.get((db) => db[getLocalId()].writings[writingId]);
 
-            await IndexedDB.put(IndexedDB.paths.writings, databaseResult);
+            await IndexedDB.put('writings', databaseResult);
 
             writingsState(add(writingId, databaseResult));
         }

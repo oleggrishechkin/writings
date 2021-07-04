@@ -2,23 +2,12 @@ import { createState } from 'react-tagged-state';
 import resetEvent from '../events/resetEvent';
 import LocalStorage from '../../classes/LocalStorage';
 
-export interface IUser {
-    localId: string;
-    photoUrl: string;
-    displayName: string;
-    email: string;
-    idToken: string;
-    refreshToken: string;
-    expiresIn: string;
-    expires: number;
-}
+const getInitialState = () => LocalStorage.get('state/user') || null;
 
-const getInitialState = (): IUser => LocalStorage.get(LocalStorage.paths.user) || null;
-
-const userState = createState<null | IUser>(getInitialState());
+const userState = createState(getInitialState());
 
 userState``((user) => {
-    LocalStorage.set(LocalStorage.paths.user, user);
+    LocalStorage.set('state/user', user);
 });
 
 resetEvent``(() => {

@@ -1,13 +1,13 @@
+import React, { ReactElement } from 'react';
 import { createPortal } from 'react-dom';
-import { ReactElement, Fragment } from 'react';
 
-interface IPortalProps {
+interface IProps {
     opened?: boolean;
     children: any;
 }
 
-const Portal = ({ opened, children }: IPortalProps): ReactElement => (
-    <Fragment>{!!opened && createPortal(children, document.getElementById('root') || document.body)}</Fragment>
+const Portal = ({ opened, children }: IProps): ReactElement => (
+    <>{opened && createPortal(children, document.getElementById('root') || document.body)}</>
 );
 
 export default Portal;

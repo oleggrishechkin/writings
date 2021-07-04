@@ -1,25 +1,27 @@
-import styled from 'styled-components';
+import React, { MouseEventHandler, ReactElement } from 'react';
+import cx from 'clsx';
 
-const IconButton = styled.button`
-    align-items: center;
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    cursor: pointer;
-    display: flex;
-    fill: var(--blue);
-    justify-content: center;
-    outline: none;
-    transition: opacity 300ms, transform 300ms;
-    filter: drop-shadow(var(--shadowFar));
-    &:active {
-        opacity: 0.7;
-        transform: scale(1.5);
-    }
-    &[data-gray='true'] {
-        fill: var(--gray);
-    }
-`;
+interface IProps {
+    'aria-label'?: string;
+    className?: string;
+    children: any;
+    onMouseDown?: MouseEventHandler;
+    onClick?: MouseEventHandler;
+}
+
+const IconButton = ({ 'aria-label': ariaLabel, className, children, onMouseDown, onClick }: IProps): ReactElement => (
+    <button
+        aria-label={ariaLabel}
+        onClick={onClick}
+        className={cx(
+            className,
+            'active:opacity-50 before:-translate-x-1/2 before:-translate-y-1/2 before:absolute before:h-full before:left-1/2 before:min-h-[3rem] before:min-w-[3rem] before:top-1/2 before:w-full duration-300 flex items-center justify-center relative transition-opacity'
+        )}
+        onMouseDown={onMouseDown}
+    >
+        {children}
+    </button>
+);
 
 IconButton.defaultProps = {
     type: 'button'

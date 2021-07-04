@@ -1,27 +1,29 @@
 import { createState } from 'react-tagged-state';
-import formatDateFns from 'date-fns/format';
-import dateFnsEnUs from 'date-fns/locale/en-US';
-import dateFnsRu from 'date-fns/locale/ru';
 import localesRu from '../../locales/ru.json';
 import localesEn from '../../locales/en.json';
-import getBrowserLang from '../../utils/getBrowserLang';
-import langState, { TLang } from './langState';
+import getBrowserLang, { IBrowserLang } from '../../utils/getBrowserLang';
+import langState from './langState';
 
 export interface IFormatDate {
     (date: Date | number, format?: string): string;
 }
 
-const getFormatDate = (lang: TLang): IFormatDate => {
-    const locale = lang === 'ru' ? dateFnsRu : dateFnsEnUs;
-
-    return (date = Date.now(), format = 'Pp') => formatDateFns(date, format, { locale });
-};
+const getFormatDate =
+    (lang: IBrowserLang): IFormatDate =>
+    (date = Date.now()) =>
+        new Date(date).toLocaleString(lang, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric'
+        });
 
 export interface IFormatMessage {
     (key: keyof (typeof localesEn & typeof localesRu)): string;
 }
 
-const getFormatMessage = (lang: TLang): IFormatMessage => {
+const getFormatMessage = (lang: IBrowserLang): IFormatMessage => {
     const messages: Record<string, string> = lang === 'ru' ? localesRu : localesEn;
 
     return (key) => messages[key] || key;
@@ -32,7 +34,7 @@ export interface IIntl {
     formatDate: IFormatDate;
 }
 
-const getIntl = (lang: TLang): IIntl => ({
+const getIntl = (lang: IBrowserLang): IIntl => ({
     formatMessage: getFormatMessage(lang),
     formatDate: getFormatDate(lang)
 });

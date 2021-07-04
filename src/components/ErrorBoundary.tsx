@@ -1,33 +1,26 @@
 import { Component, ReactElement } from 'react';
 
-interface IErrorBoundaryProps {
+interface IProps {
     fallback: ReactElement;
     children: any;
 }
 
-interface IErrorBoundaryState {
+interface IState {
     hasError: boolean;
 }
 
-class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundaryState> {
-    constructor(props: IErrorBoundaryProps) {
+class ErrorBoundary extends Component<IProps, IState> {
+    constructor(props: IProps) {
         super(props);
         this.state = { hasError: false };
     }
 
-    static getDerivedStateFromError(): IErrorBoundaryState {
+    static getDerivedStateFromError(): IState {
         return { hasError: true };
     }
 
     render(): ReactElement {
-        const { fallback, children } = this.props;
-        const { hasError } = this.state;
-
-        if (hasError) {
-            return fallback;
-        }
-
-        return children;
+        return this.state.hasError ? this.props.fallback : this.props.children;
     }
 }
 

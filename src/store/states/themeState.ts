@@ -2,18 +2,25 @@ import { createState, createEffect } from 'react-tagged-state';
 import resetEvent from '../events/resetEvent';
 import LocalStorage from '../../classes/LocalStorage';
 
-export type TTheme = null | 'light' | 'dark';
+const getInitialState = () => LocalStorage.get('state/theme') || null;
 
-const getInitialState = (): TTheme => LocalStorage.get(LocalStorage.paths.theme) || null;
-
-const themeState = createState<TTheme>(getInitialState());
+const themeState = createState(getInitialState());
 
 createEffect(() => {
-    document.documentElement.dataset.theme = themeState() || 'system';
+    if (
+        themeState() === 'dark' ||
+        (themeState() === null && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+        document.documentElement.classList.add('dark');
+
+        return;
+    }
+
+    document.documentElement.classList.remove('dark');
 });
 
 themeState``((theme) => {
-    LocalStorage.set(LocalStorage.paths.theme, theme);
+    LocalStorage.set('state/theme', theme);
 });
 
 resetEvent``(() => {
